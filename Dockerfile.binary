@@ -1,0 +1,31 @@
+ARG PY_IMAGE=python:3.10-bookworm
+FROM ${PY_IMAGE} AS builder
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgmp-dev gcc libc6-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+
+COPY requirements.txt constraints.txt ./
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir -r requirements.txt -c constraints.txt pyinstaller
+
+COPY . .
+RUN pyinstaller --clean --noconfirm packaging/pyinstaller.spec \
+    && test -x dist/spk-runner
+
+ARG DEBIAN_IMAGE=debian:bookworm-slim
+FROM ${DEBIAN_IMAGE} AS runtime
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends libgmp10 ca-certificates \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --create-home --shell /usr/sbin/nologin runspk
+
+COPY --from=builder /build/dist/spk-runner /usr/local/bin/spk-runner
+
+USER runspk
+ENV PYTHONUNBUFFERED=1 SPK_CONTAINER=1
+
+ENTRYPOINT ["/usr/local/bin/spk-runner"]

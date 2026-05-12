@@ -1,0 +1,9 @@
+.venv-spk-release/
+__pycache__/
+*.py[cod]
+*.so
+spk_engine/*.c
+build/
+dist/
+*.egg-info/
+encrypted_object.pkl

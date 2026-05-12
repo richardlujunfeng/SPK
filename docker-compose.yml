@@ -1,0 +1,15 @@
+services:
+  spk:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        PY_IMAGE: python:3.10-slim-bookworm
+    image: spk-kdtree:release
+    environment:
+      SPK_PAILLIER_BITS: "${SPK_PAILLIER_BITS:-512}"
+      SPK_SHOW_BACKEND: "${SPK_SHOW_BACKEND:-0}"
+      SPK_QUERY_MULTI_PACK: "${SPK_QUERY_MULTI_PACK:-1}"
+      SPK_OUTSOURCE_PARALLEL: "${SPK_OUTSOURCE_PARALLEL:-1}"
+      SPK_ENCRYPT_WORKERS: "${SPK_ENCRYPT_WORKERS:-0}"
+    working_dir: /app

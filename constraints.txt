@@ -1,0 +1,7 @@
+# Pinned runtime for reproducible Docker / wheels. Regenerate:
+#   pip install pip-tools && pip-compile requirements.in (optional)
+# Or: pip freeze > constraints.lock on a golden machine.
+
+gmpy2==2.1.5
+numpy==1.26.4
+phe==1.5.0

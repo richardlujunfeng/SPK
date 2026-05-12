@@ -1,0 +1,35 @@
+Authorized runtime — recipients run the sealed executable only.
+
+1) Obtain `spk-runner` (single Linux binary built by the publisher).
+
+   Typical publisher workflow:
+     bash scripts/extract_spk_binary.sh
+   which writes `./dist/spk-runner` (requires Docker for build isolation).
+
+   If Docker cannot pull images (registry timeout), either configure a mirror / proxy,
+   set SPK_PY_BUILD_IMAGE and SPK_DEBIAN_RUNTIME_IMAGE (see MAINTAINERS_PACKAGING.md),
+   or run: bash scripts/build_binary_venv.sh
+
+2) Execute:
+
+     chmod +x spk-runner
+     ./spk-runner
+
+   Do not unpack or replace Python sources; workload is controlled via environment variables only.
+
+3) Common tuning (examples):
+
+     SPK_NUM_POINTS=2000 SPK_DIM=2 SPK_K=1 ./spk-runner
+     SPK_POINTS_LIST=500,1000 SPK_DIM=3 SPK_K=2 ./spk-runner
+     SPK_PAILLIER_BITS=512 SPK_SHOW_BACKEND=1 ./spk-runner
+
+   Pairing coordinate outsource (if enabled in build defaults):
+
+     SPK_PAIRING_COORD_OUTSOURCE=1 ./spk-runner
+
+Binary packs deter casual edits to main.py; it is not cryptographic obfuscation.
+
+Docker-only alternative (publisher-maintained image):
+
+     docker build -f Dockerfile.binary -t spk-runner:runtime .
+     docker run --rm spk-runner:runtime
